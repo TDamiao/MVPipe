@@ -2,6 +2,46 @@ import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import path from 'node:path';
 import * as oracleService from './oracleService';
 
+const guardStreamWrite = (stream: NodeJS.WriteStream | undefined) => {
+  if (!stream) return;
+  const original = stream.write.bind(stream);
+  stream.write = ((chunk: any, ...rest: any[]) => {
+    try {
+      return original(chunk, ...rest);
+    } catch {
+      // Ignore EPIPE/broken pipe and any stream write failures.
+      return false;
+    }
+  }) as typeof stream.write;
+};
+
+guardStreamWrite(process.stdout);
+guardStreamWrite(process.stderr);
+
+const ignoreEpipe = (err: unknown) => {
+  if (err && typeof err === 'object' && 'code' in err && (err as any).code === 'EPIPE') {
+    return;
+  }
+};
+
+process.stdout?.on('error', ignoreEpipe);
+process.stderr?.on('error', ignoreEpipe);
+
+const guardConsoleWrite = (method: 'log' | 'warn' | 'error') => {
+  const original = console[method];
+  console[method] = (...args: unknown[]) => {
+    try {
+      original.apply(console, args);
+    } catch {
+      // Ignore logging failures (e.g., EPIPE/broken pipe).
+    }
+  };
+};
+
+guardConsoleWrite('log');
+guardConsoleWrite('warn');
+guardConsoleWrite('error');
+
 // The built directory structure
 //
 // ├─┬─┬ dist
@@ -14,6 +54,9 @@ import * as oracleService from './oracleService';
 process.env.DIST = path.join(__dirname, '../dist');
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public');
 
+const DIST = process.env.DIST ?? path.join(__dirname, '../dist');
+const VITE_PUBLIC = process.env.VITE_PUBLIC ?? path.join(DIST, '../public');
+
 
 let win: BrowserWindow | null;
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
@@ -21,13 +64,16 @@ const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
 
 function createWindow() {
   win = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    icon: path.join(process.env.VITE_PUBLIC, 'logo.svg'),
+    width: 1400,
+    height: 900,
+    minWidth: 1200,
+    minHeight: 800,
+    icon: path.join(VITE_PUBLIC, 'logo.svg'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
+  win.maximize();
 
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
@@ -38,7 +84,7 @@ function createWindow() {
     win.loadURL(VITE_DEV_SERVER_URL);
   } else {
     // win.loadFile('dist/index.html')
-    win.loadFile(path.join(process.env.DIST, 'index.html'));
+    win.loadFile(path.join(DIST, 'index.html'));
   }
 }
 

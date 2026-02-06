@@ -31,6 +31,10 @@
     "vite-plugin-electron-renderer": "^0.14.5"
   },
   "build": {
+    "icon": "public/logo.png",
+    "win": {
+      "icon": "public/logo.ico"
+    },
     "extraResources": [
       {
         "from": "vendor/instantclient",
