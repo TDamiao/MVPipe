@@ -51,11 +51,12 @@ guardConsoleWrite('error');
 // │ │ ├── main.js
 // │ │ └── preload.js
 // │
-process.env.DIST = path.join(__dirname, '../dist');
-process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public');
+const APP_PATH = app.isPackaged ? app.getAppPath() : process.cwd();
+process.env.DIST = path.join(APP_PATH, 'dist');
+process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(APP_PATH, 'public');
 
-const DIST = process.env.DIST ?? path.join(__dirname, '../dist');
-const VITE_PUBLIC = process.env.VITE_PUBLIC ?? path.join(DIST, '../public');
+const DIST = process.env.DIST ?? path.join(APP_PATH, 'dist');
+const VITE_PUBLIC = process.env.VITE_PUBLIC ?? path.join(APP_PATH, 'public');
 
 
 let win: BrowserWindow | null;

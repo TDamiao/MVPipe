@@ -14,10 +14,13 @@ export interface ActiveLoad {
     sid: number;
     username: string;
     owner: string | null;
+    machine?: string | null;
+    osuser?: string | null;
     operation: string;
     mainTable: string;
     durationSec: number;
     estMB: number;
+    cpuPercent?: number;
     impact: 'Baixo' | 'Médio' | 'Alto';
     waitEvent: string;
     sqlText: string;
@@ -29,6 +32,7 @@ export interface DashboardSummary {
     totalEstMB: number;
     detectedLocks: number;
     topTable: string;
+    dbCpuPercent?: number;
 }
 
 export interface DashboardData {
@@ -41,8 +45,5 @@ export interface DashboardData {
 
 export type FilterOptions = {
     owner: string;
-    operation: string;
     minDuration: number;
-    impact: string;
-    table: string;
 };

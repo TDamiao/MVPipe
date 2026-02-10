@@ -10,6 +10,7 @@ import {
     Typography,
 } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import CloseIcon from '@mui/icons-material/Close';
 import NewConnectionModal from './components/NewConnectionModal';
 import Dashboard from './components/Dashboard';
 import { AppProvider } from './AppProvider';
@@ -46,7 +47,33 @@ const AppContent = () => {
                         {connections.map((conn) => (
                             <Tab
                                 key={conn.id}
-                                label={conn.name}
+                                label={
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Typography variant="body2" noWrap sx={{ maxWidth: 140 }}>
+                                            {conn.name}
+                                        </Typography>
+                                        <Box
+                                            component="span"
+                                            onMouseDown={(e) => e.stopPropagation()}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                context.removeConnection(conn.id);
+                                            }}
+                                            sx={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                width: 20,
+                                                height: 20,
+                                                borderRadius: '50%',
+                                                '&:hover': { bgcolor: 'action.hover' },
+                                            }}
+                                            aria-label={`Close ${conn.name}`}
+                                        >
+                                            <CloseIcon fontSize="small" />
+                                        </Box>
+                                    </Box>
+                                }
                                 value={conn.id}
                                 {...a11yProps(conn.id)}
                             />

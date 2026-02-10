@@ -28,6 +28,28 @@ interface Props {
     handleClose: () => void;
 }
 
+const LAST_CONNECTION_KEY = 'mvpipe:lastConnection';
+
+const loadLastConnection = (): Partial<ConnectionDetails> | null => {
+    try {
+        const raw = localStorage.getItem(LAST_CONNECTION_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw) as Partial<ConnectionDetails>;
+    } catch {
+        return null;
+    }
+};
+
+const saveLastConnection = (details: Partial<ConnectionDetails>) => {
+    // Never persist password.
+    const { password, ...safeDetails } = details;
+    try {
+        localStorage.setItem(LAST_CONNECTION_KEY, JSON.stringify(safeDetails));
+    } catch {
+        // Ignore storage errors (quota, privacy mode, etc).
+    }
+};
+
 const NewConnectionModal = ({ open, handleClose }: Props) => {
     const context = useContext(AppContext);
     const [details, setDetails] = useState<Partial<ConnectionDetails>>({
@@ -45,6 +67,12 @@ const NewConnectionModal = ({ open, handleClose }: Props) => {
         // Reset form when modal opens/closes
         setError(null);
         setLoading(false);
+        if (open) {
+            const saved = loadLastConnection();
+            if (saved) {
+                setDetails(prev => ({ ...prev, ...saved }));
+            }
+        }
     }, [open]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +97,7 @@ const NewConnectionModal = ({ open, handleClose }: Props) => {
             setError(result.error);
         } else {
             context.addConnection({ ...newConnection, id: result.connectionId });
+            saveLastConnection(newConnection);
             handleClose();
         }
         setLoading(false);
