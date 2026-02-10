@@ -1,7 +1,7 @@
-{
+﻿{
   "name": "mv-pipe",
   "productName": "MV Pipe",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Oracle Database Load Monitoring Dashboard",
   "main": "dist-electron/main.js",
   "scripts": {
