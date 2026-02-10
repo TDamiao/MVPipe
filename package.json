@@ -35,6 +35,9 @@
     "win": {
       "icon": "public/logo.ico"
     },
+    "nsis": {
+      "include": "build/installer.nsh"
+    },
     "files": [
       "dist/**",
       "dist-electron/**",
@@ -45,6 +48,10 @@
       {
         "from": "vendor/instantclient",
         "to": "instantclient"
+      },
+      {
+        "from": "vendor/vcredist_x64.exe",
+        "to": "vcredist_x64.exe"
       }
     ]
   }
