@@ -2,7 +2,16 @@
 
 MV PIPE is a desktop application built with Electron + React (Vite) to monitor heavy data load operations in Oracle databases. It provides a real-time dashboard focused on active sessions, performance impact, and resource consumption.
 
-> Tip: add a real screenshot here when available.
+<div align="center">
+  <br />
+  <p>
+    <a href="https://github.com/TDamiao/MVPipe/releases"><img src="https://i.imgur.com/t0n2hO3.png" width="2000" alt="Print" /></a>
+  </p>
+  <br />
+  <p>
+    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License MIT" /></a>
+  </p>
+</div>
 
 ## Features
 
