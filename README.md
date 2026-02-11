@@ -116,6 +116,23 @@ The workflow will:
 
 ---
 
+## Planning Helpers (Open Source)
+
+To help organize larger features, this repository includes:
+
+- issue draft example: `docs/planning/v2-lock-screen-issue-drafts.md`
+- bulk issue creation script: `scripts/create_lock_feature_issues.sh`
+
+Example usage:
+
+```bash
+./scripts/create_lock_feature_issues.sh TDamiao/MVPipe
+```
+
+This script requires authenticated GitHub CLI (`gh auth login`).
+
+---
+
 ## How to Use
 
 1. Launch the app.
