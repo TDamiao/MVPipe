@@ -98,6 +98,24 @@ To publish a manual release, share only the `.exe` installer. For auto-update in
 
 ---
 
+## Versioning with GitHub Actions
+
+The repository includes a workflow at `.github/workflows/versioning.yml` to update app version and create a Git tag.
+
+### How to run
+
+1. Open **Actions** in GitHub.
+2. Select **Versioning**.
+3. Click **Run workflow** and provide a version in `x.y.z` format (example: `2.0.0`).
+
+The workflow will:
+- update `package.json` and `package-lock.json`
+- commit the change to the selected branch
+- create tag `v<version>`
+- push commit and tag to `origin`
+
+---
+
 ## How to Use
 
 1. Launch the app.

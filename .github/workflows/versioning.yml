@@ -1,0 +1,74 @@
+name: Versioning
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Semantic version (ex: 2.0.0)"
+        required: true
+        type: string
+
+jobs:
+  bump-and-tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate version
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+        run: |
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Version must follow x.y.z (example: 2.0.0)"
+            exit 1
+          fi
+
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists locally"
+            exit 1
+          fi
+
+          if git ls-remote --tags origin "refs/tags/v$VERSION" | grep -q .; then
+            echo "Tag v$VERSION already exists in remote"
+            exit 1
+          fi
+
+      - name: Configure Git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Update package version
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+        run: npm version "$VERSION" --no-git-tag-version
+
+      - name: Commit version files
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+        run: |
+          git add package.json package-lock.json
+          git commit -m "chore(release): v$VERSION"
+
+      - name: Create tag
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+        run: git tag "v$VERSION"
+
+      - name: Push commit and tag
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+        run: |
+          git push origin "HEAD:${{ github.ref_name }}"
+          git push origin "v$VERSION"
